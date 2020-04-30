@@ -1,0 +1,33 @@
+language: java
+os: linux
+
+branches:
+  only:
+      - master
+
+jdk:
+  - oraclejdk8
+
+script:
+  - mvn compile
+
+after_success:
+  - mvn site
+
+deploy:
+  - provider: pages
+    skip_cleanup: true
+    local_dir: target/site
+    github_token: "$GH_TOKEN"
+    keep_history: true
+    on:
+      tags: false
+      branch: master
+
+  - provider: script
+    skip_cleanup: true
+    keep_history: true
+    script: bash git_push.sh
+    on:
+      tags: false
+      branch: master
