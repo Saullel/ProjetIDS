@@ -16,8 +16,8 @@ public class MessageSystemeJoueur {
     private Deplacements directionDepl;
 	
     /**
-     * Initialise la nouvelle carte
-     * @param nvelleCarte
+     * Permet d'envoyer la nouvelle carte visible par le joueur
+     * @param nvelleCarte zone visible par le joueur
      */
 	public MessageSystemeJoueur(int[][] nvelleCarte) {
         type = TypeMessage.MAJ_CARTE;
@@ -25,8 +25,8 @@ public class MessageSystemeJoueur {
     }
 
 	/**
-	 * Initialise la nouvelle zone
-     * @param nvelleZone
+	 * Indique un changement de zone pour le joueur
+     * @param nvelleZone nom de la zone à laquelle se connecter
      */
     public MessageSystemeJoueur(String nvelleZone) {
         type = TypeMessage.CHANGMT_ZONE;
@@ -35,7 +35,7 @@ public class MessageSystemeJoueur {
     
     /**
      * Valide le déplacement du joueur
-     * @param directionDepl
+     * @param directionDepl direction validée
      */
     public MessageSystemeJoueur(Deplacements directionDepl) {
     	type = TypeMessage.VALIDE;
