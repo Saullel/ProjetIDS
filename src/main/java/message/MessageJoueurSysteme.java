@@ -17,7 +17,7 @@ public class MessageJoueurSysteme implements Serializable {
     private DescriptionJoueur descriptionJoueur;
 
     /**
-     * Initialise le déplacement du joueur
+     * Initialise le dÃ©placement du joueur
      * @param directionDepl
      */
     public MessageJoueurSysteme(Deplacements directionDepl) {
@@ -35,7 +35,7 @@ public class MessageJoueurSysteme implements Serializable {
     }
 
     /**
-     * Demande à quitter le jeu
+     * Demande Ã  quitter le jeu
      */
     public MessageJoueurSysteme(){
         type = TypeMessage.QUITTE;
@@ -50,8 +50,8 @@ public class MessageJoueurSysteme implements Serializable {
     }
 
     /**
-     * Retourne le déplacement du joueur
-     * @return directionDepl le déplacement du joueur
+     * Retourne le dÃ©placement du joueur
+     * @return directionDepl le dÃ©placement du joueur
      */
     public Deplacements getDirectionDepl() {
         return directionDepl;

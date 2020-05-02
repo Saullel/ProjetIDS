@@ -34,7 +34,7 @@ public class MessageSystemeJoueur {
     }
     
     /**
-     * Valide le déplacement du joueur
+     * Valide le dÃ©placement du joueur
      * @param directionDepl
      */
     public MessageSystemeJoueur(Deplacements directionDepl) {
@@ -43,7 +43,7 @@ public class MessageSystemeJoueur {
     }
     
     /**
-     * Valide la déconnection du joueur
+     * Valide la dÃ©connexion du joueur
      */
     public MessageSystemeJoueur(){
         type = TypeMessage.LIBERE;
@@ -74,8 +74,8 @@ public class MessageSystemeJoueur {
     }   
     
     /**
-     * Retourne le déplacement du joueur validé
-     * @return directionDepl le déplacement du joueur
+     * Retourne le dÃ©placement du joueur validï¿½
+     * @return directionDepl le dÃ©placement du joueur
      */
     public Deplacements getDirectionDepl() {
         return directionDepl;

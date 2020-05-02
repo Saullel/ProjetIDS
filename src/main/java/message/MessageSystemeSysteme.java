@@ -15,9 +15,9 @@ public class MessageSystemeSysteme implements Serializable {
     private int[][] voisinsCase;
 
     /**
-     * Initialise les coordonnées d'une case suite à une demande
-     * @param xCase coordonnée en x de la case
-     * @param yCase coordonnée en y de la case
+     * Initialise les coordonnÃ©es d'une case suite Ã  une demande
+     * @param xCase coordonnÃ©es en x de la case
+     * @param yCase coordonnÃ©es en y de la case
      */
     public MessageSystemeSysteme(int xCase, int yCase) {
         type = TypeMessage.DEMANDE;
@@ -25,7 +25,7 @@ public class MessageSystemeSysteme implements Serializable {
     }
 
     /**
-     * Initialise la réponse à une demande de voisins d'une case
+     * Initialise la rÃ©ponse Ã  une demande de voisins d'une case
      * @param voisins voisins d'une case
      */
     public MessageSystemeSysteme(int[][] voisins) {
