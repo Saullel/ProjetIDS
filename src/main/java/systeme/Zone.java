@@ -1,9 +1,9 @@
 package systeme;
 
 import com.rabbitmq.client.*;
-import message.MessageJoueur;
-import org.graalvm.util.CollectionsUtil;
+import message.*;
 import outils.Envoie;
+import joueur.Deplacements;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class Zone {
             DeliverCallback deliverCallbackJoueur = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 try {
-                    MessageJoueur mj = (MessageJoueur) Envoie.deserialize(delivery.getBody());
+                    MessageJoueurSysteme mj = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
                     switch (mj.getType()) {
                         case QUITTE:
                             System.out.println("un joueur souhaite partir");
@@ -58,8 +58,8 @@ public class Zone {
             DeliverCallback deliverCallbackConnexion = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 try {
-                    MessageJoueur mj = (MessageJoueur) Envoie.deserialize(delivery.getBody());
-                    if(mj.getType() == MessageJoueur.TypeMessage.MODIF_INFOS) {
+                    MessageJoueurSysteme mj = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
+                    if(mj.getType().equals(MessageJoueurSysteme.TypeMessage.MODIF_INFOS)) {
                         String s = "nomQueue";
                         channelJoueur.basicPublish("", queueConnexion, null, s.getBytes());
 
