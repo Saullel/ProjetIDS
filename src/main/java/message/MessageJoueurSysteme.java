@@ -10,6 +10,7 @@ public class MessageJoueurSysteme implements Serializable {
         DEPLACEMENT,
         MODIF_INFOS,
         QUITTE,
+        VALIDE
     }
 
     private TypeMessage type;
@@ -18,7 +19,7 @@ public class MessageJoueurSysteme implements Serializable {
 
     /**
      * Initialise le déplacement du joueur
-     * @param directionDepl
+     * @param directionDepl direction du déplacement voulu
      */
     public MessageJoueurSysteme(Deplacements directionDepl) {
         type = TypeMessage.DEPLACEMENT;
@@ -27,7 +28,7 @@ public class MessageJoueurSysteme implements Serializable {
 
     /**
      * Initialise la description du joueur
-     * @param descriptionJoueur
+     * @param descriptionJoueur les caractéristiques du joueur
      */
     public MessageJoueurSysteme(DescriptionJoueur descriptionJoueur) {
         type = TypeMessage.MODIF_INFOS;
@@ -58,7 +59,7 @@ public class MessageJoueurSysteme implements Serializable {
     }
 
     /**
-     * Retour la description du joueur
+     * Retourne la description du joueur
      * @return descriptionJoueur la description du joueur
      */
     public DescriptionJoueur getDescriptionJoueur() {
