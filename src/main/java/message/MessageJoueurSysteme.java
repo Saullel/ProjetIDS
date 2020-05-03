@@ -1,28 +1,22 @@
 package message;
 
-import joueur.Deplacements;
 import joueur.DescriptionJoueur;
+import types.Deplacement;
+import types.MessageJoueurToSysteme;
 
 import java.io.Serializable;
 
 public class MessageJoueurSysteme implements Serializable {
-	public enum TypeMessage {
-        DEPLACEMENT,
-        MODIF_INFOS,
-        QUITTE,
-        VALIDE
-    }
-
-    private TypeMessage type;
-    private Deplacements directionDepl;
+    private MessageJoueurToSysteme type;
+    private Deplacement directionDepl;
     private DescriptionJoueur descriptionJoueur;
 
     /**
      * Initialise le déplacement du joueur
      * @param directionDepl direction du déplacement voulu
      */
-    public MessageJoueurSysteme(Deplacements directionDepl) {
-        type = TypeMessage.DEPLACEMENT;
+    public MessageJoueurSysteme(Deplacement directionDepl) {
+        type = MessageJoueurToSysteme.DEPLACEMENT;
         this.directionDepl = directionDepl;
     }
 
@@ -31,7 +25,7 @@ public class MessageJoueurSysteme implements Serializable {
      * @param descriptionJoueur les caractéristiques du joueur
      */
     public MessageJoueurSysteme(DescriptionJoueur descriptionJoueur) {
-        type = TypeMessage.MODIF_INFOS;
+        type = MessageJoueurToSysteme.MODIF_INFOS;
         this.descriptionJoueur = descriptionJoueur;
     }
 
@@ -39,14 +33,14 @@ public class MessageJoueurSysteme implements Serializable {
      * Demande à quitter le jeu
      */
     public MessageJoueurSysteme(){
-        type = TypeMessage.QUITTE;
+        type = MessageJoueurToSysteme.QUITTE;
     }
 
     /**
      * Retourne le type du message
      * @return type du message
      */
-    public TypeMessage getType() {
+    public MessageJoueurToSysteme getType() {
         return type;
     }
 
@@ -54,7 +48,7 @@ public class MessageJoueurSysteme implements Serializable {
      * Retourne le déplacement du joueur
      * @return directionDepl le déplacement du joueur
      */
-    public Deplacements getDirectionDepl() {
+    public Deplacement getDirectionDepl() {
         return directionDepl;
     }
 

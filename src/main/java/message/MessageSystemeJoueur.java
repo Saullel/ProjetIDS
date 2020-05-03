@@ -1,26 +1,22 @@
 package message;
 
-import joueur.Deplacements;
+import java.io.Serializable;
 
-public class MessageSystemeJoueur {
-	public enum TypeMessage {
-    	MAJ_CARTE,
-    	LIBERE,
-    	CHANGMT_ZONE,
-    	VALIDE
-    }
+import types.Deplacement;
+import types.MessageSystemeToJoueur;
 
-	private TypeMessage type;
+public class MessageSystemeJoueur implements Serializable {
+	private MessageSystemeToJoueur type;
     private int[][] nvelleCarte;
     private String nvelleZone;
-    private Deplacements directionDepl;
+    private Deplacement directionDepl;
 	
     /**
      * Permet d'envoyer la nouvelle carte visible par le joueur
      * @param nvelleCarte zone visible par le joueur
      */
 	public MessageSystemeJoueur(int[][] nvelleCarte) {
-        type = TypeMessage.MAJ_CARTE;
+        type = MessageSystemeToJoueur.MAJ_CARTE;
         this.nvelleCarte = nvelleCarte;
     }
 
@@ -29,7 +25,7 @@ public class MessageSystemeJoueur {
      * @param nvelleZone nom de la zone à laquelle se connecter
      */
     public MessageSystemeJoueur(String nvelleZone) {
-        type = TypeMessage.CHANGMT_ZONE;
+        type = MessageSystemeToJoueur.CHANGMT_ZONE;
         this.nvelleZone =  nvelleZone;
     }
     
@@ -37,8 +33,8 @@ public class MessageSystemeJoueur {
      * Valide le déplacement du joueur
      * @param directionDepl direction validée
      */
-    public MessageSystemeJoueur(Deplacements directionDepl) {
-    	type = TypeMessage.VALIDE;
+    public MessageSystemeJoueur(Deplacement directionDepl) {
+    	type = MessageSystemeToJoueur.VALIDE;
     	this.directionDepl = directionDepl;
     }
     
@@ -46,14 +42,14 @@ public class MessageSystemeJoueur {
      * Valide la déconnexion du joueur
      */
     public MessageSystemeJoueur(){
-        type = TypeMessage.LIBERE;
+        type = MessageSystemeToJoueur.LIBERE;
     }
     
     /**
      * Retourne le type du message
      * @return type du message
      */
-    public TypeMessage getType() {
+    public MessageSystemeToJoueur getType() {
         return type;
     }
 
@@ -77,7 +73,7 @@ public class MessageSystemeJoueur {
      * Retourne le déplacement du joueur valid�
      * @return directionDepl le déplacement du joueur
      */
-    public Deplacements getDirectionDepl() {
+    public Deplacement getDirectionDepl() {
         return directionDepl;
     }
    

@@ -1,9 +1,10 @@
 package systeme;
 
+import types.MessageJoueurToSysteme;
 import com.rabbitmq.client.*;
 import message.*;
 import outils.Envoie;
-import joueur.Deplacements;
+import types.Deplacement;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class Zone {
                 String message = new String(delivery.getBody(), "UTF-8");
                 try {
                     MessageJoueurSysteme mj = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
-                    if(mj.getType().equals(MessageJoueurSysteme.TypeMessage.MODIF_INFOS)) {
+                    if(mj.getType().equals(MessageJoueurToSysteme.MODIF_INFOS)) {
                         String s = "nomQueue";
                         channelJoueur.basicPublish("", queueConnexion, null, s.getBytes());
 

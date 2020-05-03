@@ -1,6 +1,6 @@
-package joueur;
+package types;
 
-public enum Deplacements {
+public enum Deplacement {
     HAUT,
     BAS,
     GAUCHE,

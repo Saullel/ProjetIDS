@@ -2,15 +2,10 @@ package message;
 
 import java.io.Serializable;
 
-import message.MessageSystemeJoueur.TypeMessage;
+import types.MessageSystemeToSysteme;
 
 public class MessageSystemeSysteme implements Serializable {
-	public enum TypeMessage {
-    	DEMANDE,
-    	REPONSE
-    }
-	
-	private TypeMessage type;
+	private MessageSystemeToSysteme type;
     private int[] indicesCase;
     private int[][] voisinsCase;
 
@@ -20,7 +15,7 @@ public class MessageSystemeSysteme implements Serializable {
      * @param yCase coordonnées en y de la case
      */
     public MessageSystemeSysteme(int xCase, int yCase) {
-        type = TypeMessage.DEMANDE;
+        type = MessageSystemeToSysteme.DEMANDE;
         indicesCase = new int[]{xCase, yCase};
     }
 
@@ -29,7 +24,7 @@ public class MessageSystemeSysteme implements Serializable {
      * @param voisins voisins d'une case
      */
     public MessageSystemeSysteme(int[][] voisins) {
-        type = TypeMessage.REPONSE;
+        type = MessageSystemeToSysteme.REPONSE;
         voisinsCase = voisins;
     }
 
@@ -37,7 +32,7 @@ public class MessageSystemeSysteme implements Serializable {
      * Retourne le type du message
      * @return type du message
      */
-    public TypeMessage getType() {
+    public MessageSystemeToSysteme getType() {
     	return type;
     }
 
