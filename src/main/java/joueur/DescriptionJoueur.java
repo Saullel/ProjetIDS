@@ -25,5 +25,4 @@ public class DescriptionJoueur implements Serializable {
 
     public void setCouleur(String couleur) { this.couleur = couleur; }
 
-
 }
