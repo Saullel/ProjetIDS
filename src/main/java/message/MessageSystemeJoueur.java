@@ -5,6 +5,7 @@ import java.io.Serializable;
 import types.Deplacement;
 import types.MessageSystemeToJoueur;
 
+import java.io.Serializable;
 public class MessageSystemeJoueur implements Serializable {
 	private MessageSystemeToJoueur type;
     private int[][] nvelleCarte;
