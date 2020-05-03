@@ -7,6 +7,7 @@ import com.rabbitmq.client.DeliverCallback;
 import message.MessageJoueurSysteme;
 import message.MessageSystemeJoueur;
 import outils.Envoie;
+import types.Deplacement;
 
 import java.io.BufferedReader;
 import java.io.IOException;

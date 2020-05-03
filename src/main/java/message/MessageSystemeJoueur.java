@@ -1,18 +1,13 @@
 package message;
 
-import joueur.Deplacement;
-
 import java.io.Serializable;
 
-public class MessageSystemeJoueur implements Serializable {
-	public enum TypeMessage {
-    	MAJ_CARTE,
-    	LIBERE,
-    	CHANGMT_ZONE,
-    	VALIDE
-    }
+import types.Deplacement;
+import types.MessageSystemeToJoueur;
 
-	private TypeMessage type;
+import java.io.Serializable;
+public class MessageSystemeJoueur implements Serializable {
+	private MessageSystemeToJoueur type;
     private int[][] nvelleCarte;
     private String nvelleZone;
     private Deplacement directionDepl;
@@ -22,7 +17,7 @@ public class MessageSystemeJoueur implements Serializable {
      * @param nvelleCarte zone visible par le joueur
      */
 	public MessageSystemeJoueur(int[][] nvelleCarte) {
-        type = TypeMessage.MAJ_CARTE;
+        type = MessageSystemeToJoueur.MAJ_CARTE;
         this.nvelleCarte = nvelleCarte;
     }
 
@@ -31,7 +26,7 @@ public class MessageSystemeJoueur implements Serializable {
      * @param nvelleZone nom de la zone à laquelle se connecter
      */
     public MessageSystemeJoueur(String nvelleZone) {
-        type = TypeMessage.CHANGMT_ZONE;
+        type = MessageSystemeToJoueur.CHANGMT_ZONE;
         this.nvelleZone =  nvelleZone;
     }
     
@@ -40,7 +35,7 @@ public class MessageSystemeJoueur implements Serializable {
      * @param directionDepl direction validée
      */
     public MessageSystemeJoueur(Deplacement directionDepl) {
-    	type = TypeMessage.VALIDE;
+    	type = MessageSystemeToJoueur.VALIDE;
     	this.directionDepl = directionDepl;
     }
     
@@ -48,14 +43,14 @@ public class MessageSystemeJoueur implements Serializable {
      * Valide la déconnexion du joueur
      */
     public MessageSystemeJoueur(){
-        type = TypeMessage.LIBERE;
+        type = MessageSystemeToJoueur.LIBERE;
     }
     
     /**
      * Retourne le type du message
      * @return type du message
      */
-    public TypeMessage getType() {
+    public MessageSystemeToJoueur getType() {
         return type;
     }
 

@@ -1,19 +1,13 @@
 package message;
 
-import joueur.Deplacement;
 import joueur.DescriptionJoueur;
+import types.Deplacement;
+import types.MessageJoueurToSysteme;
 
 import java.io.Serializable;
 
 public class MessageJoueurSysteme implements Serializable {
-	public enum TypeMessage {
-        DEPLACEMENT,
-        MODIF_INFOS,
-        QUITTE,
-        VALIDE
-    }
-
-    private TypeMessage type;
+    private MessageJoueurToSysteme type;
 	private String queueReponse;
     private Deplacement directionDepl;
     private DescriptionJoueur descriptionJoueur;
@@ -23,8 +17,9 @@ public class MessageJoueurSysteme implements Serializable {
      * @param queueReponse queue sur laquelle le systeme doit répondre
      * @param directionDepl direction du déplacement voulu
      */
+
     public MessageJoueurSysteme(String queueReponse, Deplacement directionDepl) {
-        type = TypeMessage.DEPLACEMENT;
+        type = MessageJoueurToSysteme.DEPLACEMENT;
         this.queueReponse = queueReponse;
         this.directionDepl = directionDepl;
     }
@@ -34,8 +29,8 @@ public class MessageJoueurSysteme implements Serializable {
      * @param queueReponse queue sur laquelle le systeme doit répondre
      * @param descriptionJoueur les caractéristiques du joueur
      */
-    public MessageJoueurSysteme(String queueReponse, DescriptionJoueur descriptionJoueur) {
-        type = TypeMessage.MODIF_INFOS;
+	public MessageJoueurSysteme(String queueReponse, DescriptionJoueur descriptionJoueur) {
+		type = MessageJoueurToSysteme.MODIF_INFOS;
         this.queueReponse = queueReponse;
         this.descriptionJoueur = descriptionJoueur;
     }
@@ -44,8 +39,8 @@ public class MessageJoueurSysteme implements Serializable {
      * Demande à quitter le jeu
      * @param queueReponse queue sur laquelle le systeme doit répondre
      */
-    public MessageJoueurSysteme(String queueReponse){
-        type = TypeMessage.QUITTE;
+public MessageJoueurSysteme(String queueReponse){
+        type = MessageJoueurToSysteme.QUITTE;
         this.queueReponse = queueReponse;
     }
 
@@ -53,7 +48,7 @@ public class MessageJoueurSysteme implements Serializable {
      * Retourne le type du message
      * @return type du message
      */
-    public TypeMessage getType() {
+    public MessageJoueurToSysteme getType() {
         return type;
     }
 
