@@ -1,8 +1,8 @@
 package types;
 
 public enum MessageSystemeToJoueur {
+	INIT,
 	MAJ_CARTE,
-	LIBERE,
 	CHANGMT_ZONE,
-	VALIDE
+	ERREUR
 }
