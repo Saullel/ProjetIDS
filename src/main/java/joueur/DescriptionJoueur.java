@@ -1,13 +1,14 @@
 package joueur;
 
 import java.io.Serializable;
+import types.*;
 
 public class DescriptionJoueur implements Serializable {
     private String nom;
-    private String forme;
-    private String couleur;
+    private Forme forme;
+    private Couleur couleur;
 
-    public DescriptionJoueur(String nom, String forme, String couleur) {
+    public DescriptionJoueur(String nom, Forme forme, Couleur couleur) {
         this.nom = nom;
         this.forme = forme;
         this.couleur = couleur;
@@ -15,14 +16,14 @@ public class DescriptionJoueur implements Serializable {
 
     public String getNom() { return nom; }
 
-    public String getForme() { return forme; }
+    public Forme getForme() { return forme; }
 
-    public String getCouleur() { return couleur; }
+    public Couleur getCouleur() { return couleur; }
 
     public void setNom(String nom) { this.nom = nom; }
 
-    public void setForme(String forme) { this.forme = forme; }
+    public void setForme(Forme forme) { this.forme = forme; }
 
-    public void setCouleur(String couleur) { this.couleur = couleur; }
+    public void setCouleur(Couleur couleur) { this.couleur = couleur; }
 
 }
