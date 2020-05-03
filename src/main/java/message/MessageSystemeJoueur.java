@@ -1,8 +1,10 @@
 package message;
 
-import joueur.Deplacements;
+import joueur.Deplacement;
 
-public class MessageSystemeJoueur {
+import java.io.Serializable;
+
+public class MessageSystemeJoueur implements Serializable {
 	public enum TypeMessage {
     	MAJ_CARTE,
     	LIBERE,
@@ -13,7 +15,7 @@ public class MessageSystemeJoueur {
 	private TypeMessage type;
     private int[][] nvelleCarte;
     private String nvelleZone;
-    private Deplacements directionDepl;
+    private Deplacement directionDepl;
 	
     /**
      * Permet d'envoyer la nouvelle carte visible par le joueur
@@ -37,7 +39,7 @@ public class MessageSystemeJoueur {
      * Valide le déplacement du joueur
      * @param directionDepl direction validée
      */
-    public MessageSystemeJoueur(Deplacements directionDepl) {
+    public MessageSystemeJoueur(Deplacement directionDepl) {
     	type = TypeMessage.VALIDE;
     	this.directionDepl = directionDepl;
     }
@@ -77,7 +79,7 @@ public class MessageSystemeJoueur {
      * Retourne le déplacement du joueur valid�
      * @return directionDepl le déplacement du joueur
      */
-    public Deplacements getDirectionDepl() {
+    public Deplacement getDirectionDepl() {
         return directionDepl;
     }
    
