@@ -4,6 +4,7 @@ import systeme.Zone;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import types.*;
 
 public class LanceurJoueur {
     public static void main(String[] args){
