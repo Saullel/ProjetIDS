@@ -13,8 +13,10 @@ public class LanceurJoueur {
 
             System.out.print("Pseudo : ");
             String nom = buffer.readLine();
+            Forme forme = types.Forme.CARRE;
+            Couleur couleur = types.Couleur.ROUGE;
 
-            Joueur j = new Joueur(nom);
+            Joueur j = new Joueur(nom, forme, couleur);
             j.connexion();
 
             String s;

@@ -7,7 +7,7 @@ import com.rabbitmq.client.DeliverCallback;
 import message.MessageJoueurSysteme;
 import message.MessageSystemeJoueur;
 import outils.Envoie;
-import types.Deplacement;
+import types.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,8 +21,8 @@ public class Joueur {
     private String queue_Reception;
     private static final Object o = new Object();
 
-    public Joueur(String nom){
-        dj = new DescriptionJoueur(nom,"rond","jaune");
+    public Joueur(String nom, Forme forme, Couleur couleur){
+        dj = new DescriptionJoueur(nom, types.Forme.CARRE, types.Couleur.ROUGE);
         emplacement = "HG";
     }
 
