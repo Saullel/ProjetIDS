@@ -38,18 +38,23 @@ public class Joueur {
                 try {
                     MessageSystemeJoueur mj = (MessageSystemeJoueur) Envoie.deserialize(delivery.getBody());
                     switch (mj.getType()) {
-                        case MAJ_CARTE:
+                    	case MAJ_CARTE:
                             System.out.println("voici le nouveau terrain" + mj.getNvelleCarte());
                             break;
                         case CHANGMT_ZONE:
                             System.out.println("déplacement vers la zone" + mj.getDirectionDepl());
                             break;
-                        case VALIDE:
-                            System.out.println("validation du déplacement" + mj.getDirectionDepl());
-                            break;
-                        case LIBERE:
-                            System.out.println("Systeme accepte la deconnexion");
-                            System.exit(0);
+                        case ERREUR:
+                        	// TODO
+                        	/*switch()
+                        	  	case 1:
+                        	  		System.out.println("Attention, il y a un mur");
+                        	  	case 2:
+                        	  		System.out.println("Attention, il y a un obstacle);
+                        	  	case 3:
+                        	  		System.out.println("Attention, il y a un autre joueur);
+                        	 */
+                        case INIT:
                         default:
                             break;
                     }

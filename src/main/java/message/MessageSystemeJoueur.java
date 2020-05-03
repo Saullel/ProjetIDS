@@ -11,6 +11,7 @@ public class MessageSystemeJoueur implements Serializable {
     private int[][] nvelleCarte;
     private String nvelleZone;
     private Deplacement directionDepl;
+    private boolean erreur = false;
 	
     /**
      * Permet d'envoyer la nouvelle carte visible par le joueur
@@ -30,20 +31,15 @@ public class MessageSystemeJoueur implements Serializable {
         this.nvelleZone =  nvelleZone;
     }
     
-    /**
-     * Valide le déplacement du joueur
-     * @param directionDepl direction validée
-     */
-    public MessageSystemeJoueur(Deplacement directionDepl) {
-    	type = MessageSystemeToJoueur.VALIDE;
-    	this.directionDepl = directionDepl;
+    public MessageSystemeJoueur(boolean erreur) {
+    	this.erreur = erreur;
+    	if(erreur == true) {
+    		type = MessageSystemeToJoueur.ERREUR;
+    	}
     }
     
-    /**
-     * Valide la déconnexion du joueur
-     */
-    public MessageSystemeJoueur(){
-        type = MessageSystemeToJoueur.LIBERE;
+    public MessageSystemeJoueur() {
+    	type = MessageSystemeToJoueur.INIT;
     }
     
     /**
