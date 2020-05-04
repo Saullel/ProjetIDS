@@ -40,13 +40,12 @@ public class Main extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
-		Joueur j = new Joueur();
+		//Joueur j = new Joueur();
         //j.connexion();
         
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-            	System.out.println("TEST");
                 switch (event.getCode()) {
                     case UP:
                     	//j.deplacer(Deplacement.HAUT);
@@ -66,13 +65,12 @@ public class Main extends Application {
                     	break;
                     case ESCAPE:
                     	// j.quitter();
-                    	System.out.println("on se nachave");
+                    	System.out.println("ces soirées-là");
                     default:
                     	break;
                 }
             }
         });
-        
         
 	}
 }
