@@ -15,20 +15,25 @@ import java.util.List;
 import static java.lang.System.*;
 
 public class Zone {
-    String nom;
-    int[][] terrain;
-    List<Integer> terrain2;
-    int hauteur;
-    int largeur;
-    Channel channelSysteme;
-    Channel channelJoueur;
-    HashMap<String, String> queueSysteme;
-    HashMap<Integer,String> queueJoueur;
-    List<Integer> joueur;
-    HashMap<Integer, DescriptionJoueur> infoJoueur;
-    int cpt;
+    private String nom;
+    private int[][] terrain;
+    private List<Integer> terrain2;
+    private int hauteur;
+    private int largeur;
+    private Channel channelSysteme;
+    private Channel channelJoueur;
+    private HashMap<String, String> queueSysteme;
+    private HashMap<Integer,String> queueJoueur;
+    private List<Integer> joueur;
+    private HashMap<Integer, DescriptionJoueur> infoJoueur;
+    private int cpt;
     private static final Object o = new Object();
 
+    /**
+     * Initialise une zone du terrain
+     * @param nom le nom de la zone
+     * @param terrain le terrain où la zone est
+     */
     public Zone(String nom, int[][] terrain) {
         this.nom = nom;
         this.terrain = terrain;
@@ -41,10 +46,14 @@ public class Zone {
         cpt = 1;
     }
 
+    /**
+     * Lancement d'une partie
+     */
     public void lancement() {
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
+        
         try {
             Connection connection = factory.newConnection();
             channelSysteme = connection.createChannel();
@@ -161,10 +170,11 @@ public class Zone {
             // gestion des messages entre la zone et les joueurs
             DeliverCallback deliverCallbackJoueur = (consumerTag, delivery) -> {
                 try {
-                    MessageJoueurSysteme mjs = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
+                    MessageJoueurSysteme messageJoueurSysteme = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
                     //String queue = mjs.getQueueReponse();
-                    int id = mjs.getId();
-                    switch (mjs.getType()) {
+                    int id = messageJoueurSysteme.getId();
+                    
+                    switch (messageJoueurSysteme.getType()) {
                        /* case QUITTE:
                             out.println("un joueur souhaite partir");
                             //todo : modifier queueJoueur pour permettre une suppression et un envoie facile (ajout fonction)
@@ -176,7 +186,7 @@ public class Zone {
                             break;*/
                         case DEPLACEMENT:
                             afficherTerrain();
-                            deplacerJoueur(id,mjs.getDirectionDepl());
+                            deplacerJoueur(id, messageJoueurSysteme.getDirectionDepl());
                             afficherTerrain();
                             break;
                         /*case MODIF_INFOS:
@@ -199,9 +209,8 @@ public class Zone {
 
             DeliverCallback deliverCallbackConnexion = (consumerTag, delivery) -> {
                 try {
-
-                        MessageJoueurSysteme mj = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
-                        if (mj.getType() == MessageJoueurToSysteme.INIT) {
+                        MessageJoueurSysteme messageJoueurSysteme = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
+                        if (messageJoueurSysteme.getType() == MessageJoueurToSysteme.INIT) {
 
                             // mise en place des nouvelles queues
                             int id = cpt;
@@ -226,12 +235,12 @@ public class Zone {
 
                             channelJoueur.basicConsume(nvelleQueue_Reception, true, deliverCallbackJoueur, consumerTag2 -> { });
 
-                            ajouterJoueur(id,mj.getEmplacementX(),mj.getEmplacementY());
+                            ajouterJoueur(id, messageJoueurSysteme.getEmplacementX(), messageJoueurSysteme.getEmplacementY());
                             out.println("IIC");
 
-                            // redirection du joueur vers ses propres queues (envoie & reception)
-                            MessageSystemeJoueur m = new MessageSystemeJoueur(id, s);
-                            channelJoueur.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(m));
+                            // Redirection du joueur vers ses propres queues (envoie & reception)
+                            MessageSystemeJoueur message = new MessageSystemeJoueur(id, s);
+                            channelJoueur.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(message));
                         }
 
                 } catch (ClassNotFoundException e) {
@@ -267,10 +276,10 @@ public class Zone {
                 y++;
         }
 
-        if(x > 0 && x < hauteur && y > 0 && y < largeur) { //dans le terrain
+        if(x > 0 && x < hauteur && y > 0 && y < largeur) { // dans le terrain
             if(terrain[x][y] == 0){
                 supprimerJoueur(id, false);
-                ajouterJoueur(id,x,y);
+                ajouterJoueur(id, x, y);
             }
             out.println("effectué");
         }
@@ -283,7 +292,7 @@ public class Zone {
 
     private int[] trouverJoueur(int id) {
         int[] coord = new int[2];
-        for (int i = 0; i < hauteur ; i++) {
+        for (int i = 0; i < hauteur; i++) {
             for (int j = 0; j < largeur; j++) {
                 if(terrain[i][j] == id){
                     coord[0] = i;
@@ -297,7 +306,7 @@ public class Zone {
     private void ajouterJoueur(int id, int x, int y) throws IOException {
         if(x == -1 && y == -1) {
             boolean emplacementLibre = false;
-            for (int i = 0; i < hauteur && !emplacementLibre ; i++) {
+            for (int i = 0; i < hauteur && !emplacementLibre; i++) {
                 for (int j = 0; j < largeur && !emplacementLibre; j++) {
                     if(terrain[i][j] == 0){
                         x = i;
@@ -306,13 +315,13 @@ public class Zone {
                     }
                 }
             }
-            if (!emplacementLibre) { //todo : gérer l'exception
+            if (!emplacementLibre) { // TODO : gérer l'exception
                 out.println("pas de place coco !");
                 exit(2);
             }
         }
         else if (terrain[x][y] != 0){
-            if (x == hauteur && y == largeur) { //todo : gérer l'exception
+            if (x == hauteur && y == largeur) { // TODO : gérer l'exception
                 out.println("pas de place coco !");
                 exit(2);
             }
@@ -324,8 +333,8 @@ public class Zone {
         //StringBuilder messagePourNouveauJ = new StringBuilder();
         for(int idVoisin : joueur) {
             String message = "Tu as le bonjour du nouveau là !";
-            MessageSystemeJoueur m = new MessageSystemeJoueur(terrain,message);
-            channelJoueur.basicPublish("", queueJoueur.get(idVoisin), null, Envoie.serialize(m));
+            MessageSystemeJoueur messageSystemeJoueur = new MessageSystemeJoueur(terrain,message);
+            channelJoueur.basicPublish("", queueJoueur.get(idVoisin), null, Envoie.serialize(messageSystemeJoueur));
 
             //messagePourNouveauJ.append(" > ").append("un joueur te dit bonjour !\n");
         }
@@ -350,14 +359,16 @@ public class Zone {
     }
 
     //todo : ne pas retourner id mais joueur ou forme ou autre
-    private int[][] crationCarte(int x, int y) {
+    private int[][] creationCarte(int x, int y) {
         int[][] carte = new int[3][3];
+        
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; j++) {
                 int xTransp = x-1+i;
                 int yTransp = y-1+i;
+                
                 if (xTransp < 0 || xTransp > hauteur || yTransp < 0 || yTransp > largeur) {
-                    //todo: regarder si quelqu'un dans la zone adjacente
+                    // TODO: regarder si quelqu'un dans la zone adjacente
                     // sera appel fonction demanderCaseVide à coté ?
                     carte[i][j] = -2;
                 }
