@@ -22,12 +22,6 @@ public class MessageJoueurSysteme implements Serializable {
      * @param x emplacement du joueur sur l'axe x
      * @param y emplacement du joueur sur l'axe y
      */
-    public MessageJoueurSysteme(int x, int y) {
-        type = MessageJoueurToSysteme.INIT;
-        //descriptionJoueur = dj;
-        emplacementX = x;
-        emplacementY = y;
-    }
 
     /**
      * Initialise le déplacement du joueur
@@ -59,11 +53,13 @@ public class MessageJoueurSysteme implements Serializable {
      * @param id identifiant du joueur dans la zone
      * //@param queueReponse queue sur laquelle le systeme doit répondre
      */
-    /*public MessageJoueurSysteme(int id){
-        type = MessageJoueurToSysteme.QUITTE;
+    public MessageJoueurSysteme(int id, boolean quitte){
+        if(quitte) { type = MessageJoueurToSysteme.QUITTE;}
+        else {  type = MessageJoueurToSysteme.INIT; }
+
         this.id = id;
         //this.queueReponse = queueReponse;
-    }*/
+    }
 
     /**
      * Retourne le type du message

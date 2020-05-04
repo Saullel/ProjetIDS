@@ -1,6 +1,7 @@
 package systeme;
 
 import joueur.DescriptionJoueur;
+import org.apache.cassandra.net.Message;
 import types.Deplacement;
 import types.MessageJoueurToSysteme;
 import com.rabbitmq.client.*;
@@ -27,6 +28,7 @@ public class Zone {
     private List<Integer> joueur;
     private HashMap<Integer, DescriptionJoueur> infoJoueur;
     private int cpt;
+    int idJoueur;
     private static final Object o = new Object();
 
     /**
@@ -44,6 +46,7 @@ public class Zone {
         infoJoueur = new HashMap<>();
         joueur= new ArrayList<>();
         cpt = 1;
+        idJoueur = 0;
     }
 
     /**
@@ -58,7 +61,7 @@ public class Zone {
             Connection connection = factory.newConnection();
             channelSysteme = connection.createChannel();
             channelJoueur = connection.createChannel();
-/*
+
             String queue1;
             String queue2;
             String queue3;
@@ -105,8 +108,8 @@ public class Zone {
                     queue2_inverse = "BD_to_BG";
                     queue3_inverse = "HD_to_BG";
 
-                    queueSysteme.put("aHaut",queue1);
-                    queueSysteme.put("enDroite",queue2);
+                    queueSysteme.put("enHaut",queue1);
+                    queueSysteme.put("aDroite",queue2);
                     queueSysteme.put("enDiagonale",queue3);
 
                     break;
@@ -119,8 +122,8 @@ public class Zone {
                     queue2_inverse = "HD_to_BD";
                     queue3_inverse = "HG_to_BD";
 
-                    queueSysteme.put("aHaut",queue1);
-                    queueSysteme.put("enGauche",queue2);
+                    queueSysteme.put("enHaut",queue1);
+                    queueSysteme.put("aGauche",queue2);
                     queueSysteme.put("enDiagonale",queue3);
 
                     break;
@@ -143,56 +146,27 @@ public class Zone {
             channelSysteme.queueDeclare(queue2_inverse, false, false, false, null);
             channelSysteme.queueDeclare(queue3_inverse, false, false, false, null);
 
-            DeliverCallback deliverCallbackSysteme = (consumerTag, delivery) -> {
-                try {
-                    MessageSystemeSysteme mss = (MessageSystemeSysteme) Envoie.deserialize(delivery.getBody());
-                    String queue = mss.getQueueReponse();
-                    switch (mss.getType()) {
-                        case DEMANDE:
-                            System.out.println("le systeme veut une réponse");
-                            int[][] casesDemandees = new int[][] {{0,1},{2,0}};
-                            MessageSystemeSysteme reponse = new MessageSystemeSysteme(casesDemandees);
-                            break;
-                        case REPONSE:
-                            System.out.println("les nouvelles cases sont " + mss.getVoisinsCase());
-                            break;
-                    }
-                    System.out.println(queue);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            };
-            channelSysteme.basicConsume(queue1_inverse, true, deliverCallbackSysteme, consumerTag -> { });
-            channelSysteme.basicConsume(queue2_inverse, true, deliverCallbackSysteme, consumerTag -> { });
-            channelSysteme.basicConsume(queue3_inverse, true, deliverCallbackSysteme, consumerTag -> { });
-*/
-
             // gestion des messages entre la zone et les joueurs
             DeliverCallback deliverCallbackJoueur = (consumerTag, delivery) -> {
                 try {
+
+                    out.println(nom);
                     MessageJoueurSysteme messageJoueurSysteme = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
-                    //String queue = mjs.getQueueReponse();
                     int id = messageJoueurSysteme.getId();
-                    
+
                     switch (messageJoueurSysteme.getType()) {
-                       /* case QUITTE:
+                        case QUITTE:
                             out.println("un joueur souhaite partir");
                             //todo : modifier queueJoueur pour permettre une suppression et un envoie facile (ajout fonction)
                             //String queueSuppr = queueJoueur.get(id);
-                            //queueJoueur.remove(id);
+                            queueJoueur.remove(id);
                             joueur.remove(id);
-                            infoJoueur.remove(mjs.getId());
                             //todo : message aux joueurs indiquant que le joueur courant quitte la zone
-                            break;*/
+                            break;
                         case DEPLACEMENT:
-                            afficherTerrain();
                             deplacerJoueur(id, messageJoueurSysteme.getDirectionDepl());
                             afficherTerrain();
                             break;
-                        /*case MODIF_INFOS:
-                            out.println("un client a modifié ses infos" + mjs.getDescriptionJoueur());
-                            infoJoueur.replace(id, mjs.getDescriptionJoueur());
-                            break;*/
                         default:
                             break;
                     }
@@ -200,6 +174,66 @@ public class Zone {
                     e.printStackTrace();
                 }
             };
+
+            DeliverCallback deliverCallbackSysteme = (consumerTag, delivery) -> {
+                try {
+                    MessageSystemeSysteme mss = (MessageSystemeSysteme) Envoie.deserialize(delivery.getBody());
+                    String queue = mss.getQueueReponse();
+                    switch (mss.getType()) {
+                        case DEMANDE:
+                            System.out.println("le systeme veut une réponse");
+                            try {
+                                int id = getId();
+                                int x = mss.getxCase();
+                                int y = mss.getyCase();
+
+                                ajouterJoueur(id,x,y);
+                                joueur.add(id);
+                                afficherTerrain();
+                                String nvelleQueue_Envoie = id + "_StoJ";
+                                queueJoueur.put(id, nvelleQueue_Envoie);
+                                channelJoueur.basicConsume(nvelleQueue_Envoie, true, deliverCallbackJoueur, consumerTag2 -> { });
+
+                                MessageSystemeSysteme reponse = new MessageSystemeSysteme(true,id);
+                                channelSysteme.basicPublish("", queue, null, Envoie.serialize(reponse));
+
+
+                                MessageSystemeJoueur message = new MessageSystemeJoueur(terrain,"Bienvenue");
+                                channelJoueur.basicPublish("", nvelleQueue_Envoie, null, Envoie.serialize(message));
+                                out.println("x : " + x + ", y : " + y);
+                            } catch (Exception e) {
+                                MessageSystemeSysteme reponse = new MessageSystemeSysteme(false, -1);
+                                channelSysteme.basicPublish("", queue, null, Envoie.serialize(reponse));
+                            }
+                            break;
+                        case REPONSE:
+                            if(mss.estSucces()){
+                                // todo : ne plus ecouter sur la queue
+                                int id = mss.getId();
+                                int i = 0;
+                                while(i < joueur.size() && joueur.get(i) != id){
+                                    i++;
+                                }
+                                joueur.remove(i);
+                                queueJoueur.remove(id);
+
+                                //MessageSystemeJoueur msj = new MessageSystemeJoueur(mss.getId(),mss.getQueueReponse(),false);
+                            }
+                            else {
+                                MessageSystemeJoueur msj = new MessageSystemeJoueur(terrain,"Il semblerait que quelque chose vous bloque :x\n");
+                                out.println(queueJoueur);
+                                channelJoueur.basicPublish("", queueJoueur.get(mss.getId()), null, Envoie.serialize(mss));
+                            }
+                            break;
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            };
+            channelSysteme.basicConsume(queue1_inverse, true, deliverCallbackSysteme, consumerTag -> { });
+            channelSysteme.basicConsume(queue2_inverse, true, deliverCallbackSysteme, consumerTag -> { });
+            channelSysteme.basicConsume(queue3_inverse, true, deliverCallbackSysteme, consumerTag -> { });
+
 
             // les queues "connexion" servent à rediriger les joueurs vers leurs propres moyens de communicaton
             String queueConnexion_Envoie = nom + "_Connexion_StoJ";
@@ -213,34 +247,33 @@ public class Zone {
                         if (messageJoueurSysteme.getType() == MessageJoueurToSysteme.INIT) {
 
                             // mise en place des nouvelles queues
-                            int id = cpt;
-                            cpt++;
-
+                            int id = messageJoueurSysteme.getId();
                             joueur.add(id);
-                            //infoJoueur.put(id,mj.getDescriptionJoueur());
-                            //out.println(mj.getDescriptionJoueur().getNom());
                             //todo : ajouter message à tous les joueurs indiquant un nouveau venu sur la zone
 
-                            String s = nom + id;
+                            String s = Integer.toString(id);
 
                             String nvelleQueue_Envoie = s + "_StoJ";
                             String nvelleQueue_Reception = s + "_JtoS";
+
+                            out.println(nvelleQueue_Envoie + " " + nvelleQueue_Reception);
 
                             channelJoueur.queueDeclare(nvelleQueue_Envoie, false, false, false, null);
                             channelJoueur.queueDeclare(nvelleQueue_Reception, false, false, false, null);
 
                             queueJoueur.put(id, nvelleQueue_Envoie);
-                            String stemp = queueJoueur.get(id);
-                            out.println(stemp);
 
                             channelJoueur.basicConsume(nvelleQueue_Reception, true, deliverCallbackJoueur, consumerTag2 -> { });
 
-                            ajouterJoueur(id, messageJoueurSysteme.getEmplacementX(), messageJoueurSysteme.getEmplacementY());
-                            out.println("IIC");
-
+                            try {
+                                ajouterJoueur(id,-1,-1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             // Redirection du joueur vers ses propres queues (envoie & reception)
-                            MessageSystemeJoueur message = new MessageSystemeJoueur(id, s);
+                            MessageSystemeJoueur message = new MessageSystemeJoueur(terrain,"Bienvenue");
                             channelJoueur.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(message));
+                            afficherTerrain();
                         }
 
                 } catch (ClassNotFoundException e) {
@@ -255,6 +288,12 @@ public class Zone {
             e.printStackTrace();
         }
 
+    }
+
+    private synchronized int getId() throws IOException {
+        int id = cpt;
+        cpt++;
+        return id;
     }
 
     private synchronized void deplacerJoueur(int id, Deplacement d) throws IOException {
@@ -279,14 +318,49 @@ public class Zone {
         if(x > 0 && x < hauteur && y > 0 && y < largeur) { // dans le terrain
             if(terrain[x][y] == 0){
                 supprimerJoueur(id, false);
-                ajouterJoueur(id, x, y);
+                try {
+                    ajouterJoueur(id, x, y);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            out.println("effectué");
+            else {
+                String message;
+                if(terrain[x][y] > 0) {
+                    message = "Ce n'est pas poli de pousser les gens...\n";
+                }
+                else {
+                    message = "Aïe ! Les murs font mal...\n";
+                }
+                MessageSystemeJoueur mss = new MessageSystemeJoueur(terrain, message);
+                channelJoueur.basicPublish("", queueJoueur.get(id), null, Envoie.serialize(mss));
+            }
         }
         else{
-            out.println("pas encore possible");
-            //vers une autre zone
-            //todo : fonction demandeCaseVide
+            String nomZoneDistante;
+            if(x < 0) {
+                x = hauteur-1;
+                nomZoneDistante = "enHaut";
+                //MessageSystemeJoueur mss = new MessageSystemeJoueur(queueSysteme.get("enHaut"),x,y);
+            }
+            else if (x > hauteur) {
+                x = 0;
+                nomZoneDistante = "enBas";
+                //MessageSystemeJoueur mss = new MessageSystemeJoueur(queueSysteme.get("enBas"),x,y);
+            }
+            else if (y < 0) {
+
+                y = largeur-1;
+                nomZoneDistante = "aGauche";
+                //MessageSystemeJoueur mss = new MessageSystemeJoueur(queueSysteme.get("aGauche"),x,y);
+            }
+            else {
+                y = 0;
+                nomZoneDistante = "aDroite";
+                //MessageSystemeJoueur mss = new MessageSystemeJoueur(queueSysteme.get("aDroite"),x,y);
+            }
+            MessageSystemeSysteme mss = new MessageSystemeSysteme("HD_to_HG",id,x,y);
+            channelSysteme.basicPublish("", "HG_to_HD", null, Envoie.serialize(mss));
         }
     }
 
@@ -303,7 +377,7 @@ public class Zone {
         return coord;
     }
 
-    private void ajouterJoueur(int id, int x, int y) throws IOException {
+    private synchronized void ajouterJoueur(int id, int x, int y) throws Exception {
         if(x == -1 && y == -1) {
             boolean emplacementLibre = false;
             for (int i = 0; i < hauteur && !emplacementLibre; i++) {
@@ -316,14 +390,12 @@ public class Zone {
                 }
             }
             if (!emplacementLibre) { // TODO : gérer l'exception
-                out.println("pas de place coco !");
-                exit(2);
+                throw new Exception("Plus de place coco");
             }
         }
         else if (terrain[x][y] != 0){
             if (x == hauteur && y == largeur) { // TODO : gérer l'exception
-                out.println("pas de place coco !");
-                exit(2);
+                throw new Exception("Plus de place coco");
             }
         }
         terrain[x][y] = id;
@@ -340,7 +412,7 @@ public class Zone {
         }
     }
 
-    private void supprimerJoueur(int id, boolean prevenir) throws IOException {
+    private synchronized void supprimerJoueur(int id, boolean prevenir) throws IOException {
         int[] coord = trouverJoueur(id);
         int x = coord[0];
         int y = coord[1];

@@ -35,12 +35,11 @@ public class MessageSystemeJoueur implements Serializable {
 	 * @param nouvelX la potision en X du joueur
 	 * @param nouvelY la position en Y du joueur
 	 */
-    public MessageSystemeJoueur(String nvelleZone, int nouvelX, int nouvelY) {
+   /* public MessageSystemeJoueur(int id) {
         type = MessageSystemeToJoueur.CHANGMT_ZONE;
-        this.nvelleZone =  nvelleZone;
-        this.nouvelX = nouvelX;
-        this. nouvelY= nouvelY;
-    }
+        this.id = id;
+        this.message = nomQueue;
+    }*/
 
     // TODO : utile ?
     public MessageSystemeJoueur(boolean erreur) {
@@ -48,17 +47,6 @@ public class MessageSystemeJoueur implements Serializable {
     	if(erreur == true) {
     		type = MessageSystemeToJoueur.ERREUR;
     	}
-    }
-    
-    /**
-     * Initialise le message au joueur
-     * @param id l'identifiant du joueur
-     * @param nomQueue la nom de la queue
-     */
-    public MessageSystemeJoueur(int id, String nomQueue) {
-    	type = MessageSystemeToJoueur.INIT;
-    	this.id = id;
-    	this.message = nomQueue;
     }
     
     /**

@@ -13,6 +13,7 @@ public class LanceurSysteme {
             Zone HG = new Zone("HG", partieTerrain){};
             Zone HD = new Zone("HD", partieTerrain2){};
             HG.lancement();
+            HD.lancement();
         } catch (Exception e) {
             e.printStackTrace();
         }

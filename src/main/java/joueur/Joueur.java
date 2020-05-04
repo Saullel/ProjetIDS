@@ -27,7 +27,7 @@ public class Joueur {
      * @param nom le nom du joueur
      */
     public Joueur(String nom) {
-        descriptionJoueur = new DescriptionJoueur(nom);
+        this.id = Integer.parseInt(nom);
         emplacement = "HG";
     }
 
@@ -88,13 +88,11 @@ public class Joueur {
             DeliverCallback deliverCallbackConnexion = (consumerTag, delivery) -> {
                 try {
                     MessageSystemeJoueur messageSystemeJoueur = (MessageSystemeJoueur) Envoie.deserialize(delivery.getBody());
-                    if(messageSystemeJoueur.getType() == MessageSystemeToJoueur.INIT) {
-                        id = messageSystemeJoueur.getId();
+                    if(messageSystemeJoueur.getType() == MessageSystemeToJoueur.MAJ_CARTE) {
                         String message = messageSystemeJoueur.getMessage();
-                        this.queue_Envoie = message + "_JtoS";
-                        this.queue_Reception = message + "_StoJ";
-                        //channel.queueDeclare(queue_Envoie, false, false, false, null);
-                        //channel.queueDeclare(queue_Reception, false, false, false, null);
+                        this.queue_Envoie = id + "_JtoS";
+                        this.queue_Reception = id + "_StoJ";
+                        System.out.println(queue_Envoie + " " + queue_Reception);
                         channel.basicConsume(queue_Reception, true, deliverCallbackSysteme, consumerTag2 -> {
                         });
 
@@ -116,8 +114,8 @@ public class Joueur {
                 }
             };
             channel.basicConsume(queueConnexion_Reception, true, deliverCallbackConnexion, consumerTag -> { });
-
-            MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(-1, -1);
+            System.out.println(id);
+            MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id,false);
             channel.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(messageJoueurSysteme));
 
             synchronized (o){
@@ -139,15 +137,10 @@ public class Joueur {
         envoieMessage(messageJoueurSysteme);
     }
 
-    /*public void quitter(){
-        MessageJoueurSysteme mjs = new MessageJoueurSysteme(id);
+    public void quitter(){
+        MessageJoueurSysteme mjs = new MessageJoueurSysteme(id,true);
         envoieMessage(mjs);
-    }*/
-
-   /* public void changerInfos(DescriptionJoueur dj) {
-        MessageJoueurSysteme mjs = new MessageJoueurSysteme(id,);
-        envoieMessage(mjs);
-    }*/
+    }
 
     private void envoieMessage(MessageJoueurSysteme m) {
         try {
