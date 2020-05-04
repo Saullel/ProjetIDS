@@ -15,37 +15,47 @@ import java.io.InputStreamReader;
 
 public class Joueur {
     private int id;
-    private DescriptionJoueur dj;
+    private DescriptionJoueur descriptionJoueur;
     private String emplacement;
     private Channel channel;
     private String queue_Envoie;
     private String queue_Reception;
     private static final Object o = new Object();
 
-    public Joueur(String nom, Forme forme, Couleur couleur){
-        dj = new DescriptionJoueur(nom, types.Forme.CARRE, types.Couleur.ROUGE);
+    /**
+     * Créé un joueur
+     * @param nom le nom du joueur
+     */
+    public Joueur(String nom) {
+        descriptionJoueur = new DescriptionJoueur(nom);
         emplacement = "HG";
     }
 
-    public Joueur(){
+    /**
+     * Créé un joueur
+     */
+    public Joueur() {
         emplacement = "HG";
     }
 
-    public void connexion()  {
+    /**
+     * Créé la connexion RabbitMQ
+     */
+    public void connexion() {
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
+        
         try {
             Connection connection =  factory.newConnection();
             channel = connection.createChannel();
 
             DeliverCallback deliverCallbackSysteme = (consumerTag, delivery) -> {
                 try {
-                    MessageSystemeJoueur mj = (MessageSystemeJoueur) Envoie.deserialize(delivery.getBody());
-                    switch (mj.getType()) {
+                    MessageSystemeJoueur messageSystemeJoueur = (MessageSystemeJoueur) Envoie.deserialize(delivery.getBody());
+                    switch (messageSystemeJoueur.getType()) {
                     	case MAJ_CARTE:
-                            System.out.println("voici le nouveau terrain" + mj.getNvelleCarte());
-
+                            System.out.println("Voici le nouveau terrain" + messageSystemeJoueur.getNvelleCarte());
                             break;
                         case CHANGMT_ZONE:
                             //System.out.println("déplacement vers la zone" + mj.getDirectionDepl());
@@ -69,7 +79,7 @@ public class Joueur {
                 }
             };
 
-            // utilisation des queues "connexion" pour creer ses propres communications
+            // Utilisation des queues "connexion" pour créer ses propres communications
             String queueConnexion_Envoie = emplacement + "_Connexion_JtoS";
             String queueConnexion_Reception = emplacement + "_Connexion_StoJ";
             channel.queueDeclare(queueConnexion_Envoie, false, false, false, null);
@@ -77,10 +87,10 @@ public class Joueur {
 
             DeliverCallback deliverCallbackConnexion = (consumerTag, delivery) -> {
                 try {
-                    MessageSystemeJoueur mj = (MessageSystemeJoueur) Envoie.deserialize(delivery.getBody());
-                    if(mj.getType() == MessageSystemeToJoueur.INIT) {
-                        id = mj.getId();
-                        String message = mj.getMessage();
+                    MessageSystemeJoueur messageSystemeJoueur = (MessageSystemeJoueur) Envoie.deserialize(delivery.getBody());
+                    if(messageSystemeJoueur.getType() == MessageSystemeToJoueur.INIT) {
+                        id = messageSystemeJoueur.getId();
+                        String message = messageSystemeJoueur.getMessage();
                         this.queue_Envoie = message + "_JtoS";
                         this.queue_Reception = message + "_StoJ";
                         //channel.queueDeclare(queue_Envoie, false, false, false, null);
@@ -88,15 +98,15 @@ public class Joueur {
                         channel.basicConsume(queue_Reception, true, deliverCallbackSysteme, consumerTag2 -> {
                         });
 
-                        // couper l'écoute sur la queue "connexion"
+                        // Couper l'écoute sur la queue "connexion"
                         channel.basicCancel(consumerTag);
                         synchronized (o){
                             o.notify();
                         }
                     }
                     else {
-                        System.out.println("Erreur de message. Demandé type INIT, reçu type " + mj.getType());
-                        //todo throw exception
+                        System.out.println("Erreur de message. Demandé type INIT, reçu type " + messageSystemeJoueur.getType());
+                        // TODO throw exception
                         System.exit(1);
                     }
 
@@ -107,8 +117,8 @@ public class Joueur {
             };
             channel.basicConsume(queueConnexion_Reception, true, deliverCallbackConnexion, consumerTag -> { });
 
-            MessageJoueurSysteme mjs = new MessageJoueurSysteme(-1, -1);
-            channel.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(mjs));
+            MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(-1, -1);
+            channel.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(messageJoueurSysteme));
 
             synchronized (o){
                 try {
@@ -125,8 +135,8 @@ public class Joueur {
     }
 
     public void deplacer(Deplacement d) {
-        MessageJoueurSysteme mjs = new MessageJoueurSysteme(id,d);
-        envoieMessage(mjs);
+        MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id, d);
+        envoieMessage(messageJoueurSysteme);
     }
 
     /*public void quitter(){
@@ -141,7 +151,7 @@ public class Joueur {
 
     private void envoieMessage(MessageJoueurSysteme m) {
         try {
-            channel.basicPublish("",queue_Envoie, null, Envoie.serialize(m));
+            channel.basicPublish("", queue_Envoie, null, Envoie.serialize(m));
         } catch (IOException e) {
             e.printStackTrace();
         }

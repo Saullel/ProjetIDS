@@ -19,8 +19,9 @@ public class MessageSystemeJoueur implements Serializable {
     private String message;
 	
     /**
-     * Permet d'envoyer la nouvelle carte visible par le joueur
-     * @param nvelleCarte zone visible par le joueur
+     * Initialise le message au joueur
+     * @param nvelleCarte la carte
+     * @param message le message envoyé au joueur
      */
 	public MessageSystemeJoueur(int[][] nvelleCarte, String message) {
         type = MessageSystemeToJoueur.MAJ_CARTE;
@@ -29,9 +30,11 @@ public class MessageSystemeJoueur implements Serializable {
     }
 
 	/**
-	 * Indique un changement de zone pour le joueur
-     * @param nvelleZone nom de la zone à laquelle se connecter
-     */
+	 * Initialise le message au joueur
+	 * @param nvelleZone la carte de la zone
+	 * @param nouvelX la potision en X du joueur
+	 * @param nouvelY la position en Y du joueur
+	 */
     public MessageSystemeJoueur(String nvelleZone, int nouvelX, int nouvelY) {
         type = MessageSystemeToJoueur.CHANGMT_ZONE;
         this.nvelleZone =  nvelleZone;
@@ -39,7 +42,7 @@ public class MessageSystemeJoueur implements Serializable {
         this. nouvelY= nouvelY;
     }
 
-    // todo : utile ?
+    // TODO : utile ?
     public MessageSystemeJoueur(boolean erreur) {
     	this.erreur = erreur;
     	if(erreur == true) {
@@ -47,6 +50,11 @@ public class MessageSystemeJoueur implements Serializable {
     	}
     }
     
+    /**
+     * Initialise le message au joueur
+     * @param id l'identifiant du joueur
+     * @param nomQueue la nom de la queue
+     */
     public MessageSystemeJoueur(int id, String nomQueue) {
     	type = MessageSystemeToJoueur.INIT;
     	this.id = id;
@@ -55,7 +63,7 @@ public class MessageSystemeJoueur implements Serializable {
     
     /**
      * Retourne le type du message
-     * @return type du message
+     * @return type le type du message
      */
     public MessageSystemeToJoueur getType() {
         return type;
@@ -78,20 +86,35 @@ public class MessageSystemeJoueur implements Serializable {
     }   
     
     /**
-     * Retourne le déplacement du joueur valid�
+     * Retourne le déplacement du joueur validé
      * @return directionDepl le déplacement du joueur
      */
     /*public Deplacement getDirectionDepl() {
         return directionDepl;
     }*/
 
+    /**
+     * Retourne l'identifiant du joueur
+     * @return id l'identifiant du joueur
+     */
     public int getId() { return id; }
 
+    /**
+     * Retourne la position en X du joueur
+     * @return nouvelX la position en X du joueur
+     */
     public int getNouvelX() { return nouvelX; }
 
+    /**
+     * Retourne la position en Y du joueur
+     * @return nouvelY la position en Y du joueur
+     */
     public int getNouvelY() { return nouvelY; }
 
+    /**
+     * Retourne le message au joueur
+     * @return message le message au joueur
+     */
     public String getMessage() { return message; }
-
    
 }
