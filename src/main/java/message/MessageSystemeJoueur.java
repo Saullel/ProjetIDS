@@ -6,31 +6,40 @@ import types.Deplacement;
 import types.MessageSystemeToJoueur;
 
 import java.io.Serializable;
+
+//todo : actualiser javadoc
 public class MessageSystemeJoueur implements Serializable {
 	private MessageSystemeToJoueur type;
     private int[][] nvelleCarte;
     private String nvelleZone;
-    private Deplacement directionDepl;
     private boolean erreur = false;
+    private int id;
+    private int nouvelX;
+    private int nouvelY;
+    private String message;
 	
     /**
      * Permet d'envoyer la nouvelle carte visible par le joueur
      * @param nvelleCarte zone visible par le joueur
      */
-	public MessageSystemeJoueur(int[][] nvelleCarte) {
+	public MessageSystemeJoueur(int[][] nvelleCarte, String message) {
         type = MessageSystemeToJoueur.MAJ_CARTE;
         this.nvelleCarte = nvelleCarte;
+        this.message = message;
     }
 
 	/**
 	 * Indique un changement de zone pour le joueur
      * @param nvelleZone nom de la zone à laquelle se connecter
      */
-    public MessageSystemeJoueur(String nvelleZone) {
+    public MessageSystemeJoueur(String nvelleZone, int nouvelX, int nouvelY) {
         type = MessageSystemeToJoueur.CHANGMT_ZONE;
         this.nvelleZone =  nvelleZone;
+        this.nouvelX = nouvelX;
+        this. nouvelY= nouvelY;
     }
-    
+
+    // todo : utile ?
     public MessageSystemeJoueur(boolean erreur) {
     	this.erreur = erreur;
     	if(erreur == true) {
@@ -38,8 +47,10 @@ public class MessageSystemeJoueur implements Serializable {
     	}
     }
     
-    public MessageSystemeJoueur() {
+    public MessageSystemeJoueur(int id, String nomQueue) {
     	type = MessageSystemeToJoueur.INIT;
+    	this.id = id;
+    	this.message = nomQueue;
     }
     
     /**
@@ -70,8 +81,17 @@ public class MessageSystemeJoueur implements Serializable {
      * Retourne le déplacement du joueur valid�
      * @return directionDepl le déplacement du joueur
      */
-    public Deplacement getDirectionDepl() {
+    /*public Deplacement getDirectionDepl() {
         return directionDepl;
-    }
+    }*/
+
+    public int getId() { return id; }
+
+    public int getNouvelX() { return nouvelX; }
+
+    public int getNouvelY() { return nouvelY; }
+
+    public String getMessage() { return message; }
+
    
 }

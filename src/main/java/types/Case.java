@@ -4,5 +4,6 @@ public enum Case {
 	VIDE,
 	MUR,
 	JOUEUR,
-	OBSTACLE
+	OBSTACLE,
+	AUTRE_ZONE;
 }
