@@ -6,6 +6,7 @@ import types.MessageSystemeToSysteme;
 
 public class MessageSystemeSysteme implements Serializable {
 	private MessageSystemeToSysteme type;
+    private String queueReponse;
     private int[] indicesCase;
     private int[][] voisinsCase;
 
@@ -14,8 +15,9 @@ public class MessageSystemeSysteme implements Serializable {
      * @param xCase coordonnées en x de la case
      * @param yCase coordonnées en y de la case
      */
-    public MessageSystemeSysteme(int xCase, int yCase) {
+    public MessageSystemeSysteme(String queueReponse, int xCase, int yCase) {
         type = MessageSystemeToSysteme.DEMANDE;
+        this.queueReponse = queueReponse;
         indicesCase = new int[]{xCase, yCase};
     }
 
@@ -43,5 +45,8 @@ public class MessageSystemeSysteme implements Serializable {
     public int[][] getVoisinsCase() {
     	return voisinsCase;
     }
+
+
+    public String getQueueReponse() { return queueReponse; }
 
 }

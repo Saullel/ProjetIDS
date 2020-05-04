@@ -10,13 +10,13 @@ public class LanceurJoueur {
     public static void main(String[] args){
         try {
             BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-
+/*
             System.out.print("Pseudo : ");
             String nom = buffer.readLine();
             Forme forme = types.Forme.CARRE;
             Couleur couleur = types.Couleur.ROUGE;
-
-            Joueur j = new Joueur(nom, forme, couleur);
+*/
+            Joueur j = new Joueur();
             j.connexion();
 
             String s;
@@ -24,9 +24,9 @@ public class LanceurJoueur {
                 System.out.print(" > ");
                 s = buffer.readLine();
                 switch (s){
-                    case "quit":
+                    /*case "quit":
                         j.quitter();
-                        break;
+                        break;*/
                     case "q":
                         j.deplacer(Deplacement.GAUCHE);
                         break;
