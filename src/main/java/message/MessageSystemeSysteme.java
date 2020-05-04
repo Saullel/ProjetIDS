@@ -32,7 +32,7 @@ public class MessageSystemeSysteme implements Serializable {
 
     /**
      * Retourne le type du message
-     * @return type du message
+     * @return type le type du message
      */
     public MessageSystemeToSysteme getType() {
     	return type;
@@ -46,7 +46,10 @@ public class MessageSystemeSysteme implements Serializable {
     	return voisinsCase;
     }
 
-
+    /**
+     * Retourne les réponses depuis la queue
+     * @return queueReponse la réponse depuis la queue
+     */
     public String getQueueReponse() { return queueReponse; }
 
 }

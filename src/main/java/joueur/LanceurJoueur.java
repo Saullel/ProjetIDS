@@ -20,7 +20,8 @@ public class LanceurJoueur {
             j.connexion();
 
             String s;
-            do{
+            
+            do {
                 System.out.print(" > ");
                 s = buffer.readLine();
                 switch (s){
@@ -40,10 +41,10 @@ public class LanceurJoueur {
                         j.deplacer(Deplacement.BAS);
                         break;
                     default:
-                        System.out.println("Mauvaise commande");
+                        System.out.println("Déplacement invalide");
                         break;
                 }
-            }while(true);
+            } while(true);
 
         } catch (Exception e) {
             e.printStackTrace();

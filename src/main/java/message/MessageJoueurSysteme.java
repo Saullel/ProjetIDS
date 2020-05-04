@@ -6,7 +6,7 @@ import types.MessageJoueurToSysteme;
 
 import java.io.Serializable;
 
-//todo : actualiser param
+// TODO : actualiser param
 public class MessageJoueurSysteme implements Serializable {
     private MessageJoueurToSysteme type;
 	private String queueReponse;
@@ -31,10 +31,9 @@ public class MessageJoueurSysteme implements Serializable {
 
     /**
      * Initialise le déplacement du joueur
-     * //@param queueReponse queue sur laquelle le systeme doit répondre
-     * @param directionDepl direction du déplacement voulu
+     * @param id identifiant du joueur
+     * @param directionDepl déplacement du joueur
      */
-
     public MessageJoueurSysteme(int id, Deplacement directionDepl) {
         type = MessageJoueurToSysteme.DEPLACEMENT;
         this.id = id;
@@ -96,17 +95,21 @@ public class MessageJoueurSysteme implements Serializable {
      */
     public String getQueueReponse(){ return queueReponse; }
 
+    /**
+     * Retourne l'identifiant du joueur
+     * @return id l'identifiant du joueur
+     */
     public int getId() { return id; }
 
-    /***
+    /**
      * Retoune l'emplacement en x du joueur
-     * @return la position du joueur en x
+     * @return emplacementX la position du joueur en x
      */
     public int getEmplacementX() { return emplacementX; }
 
     /***
      * Retourne l'emplacemnt en y du joueur
-     * @return la position en joueur en y
+     * @return emplacementY la position en joueur en y
      */
     public int getEmplacementY() { return emplacementY; }
 }

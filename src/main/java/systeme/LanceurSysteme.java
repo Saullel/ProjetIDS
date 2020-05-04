@@ -10,8 +10,8 @@ public class LanceurSysteme {
             int[][] partieTerrain2 = new int[][]
                     {{-1,-1,-1,-1,-1}, {0,0,0,0,-1}, {0,0,0,0,-1}, {0,0,0,0,-1}, {0,0,0,0,-1}};
             BasicConfigurator.configure();
-            Zone HG = new Zone("HG",partieTerrain){};
-            Zone HD = new Zone("HD",partieTerrain2){};
+            Zone HG = new Zone("HG", partieTerrain){};
+            Zone HD = new Zone("HD", partieTerrain2){};
             HG.lancement();
         } catch (Exception e) {
             e.printStackTrace();
