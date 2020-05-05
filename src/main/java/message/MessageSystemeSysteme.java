@@ -13,6 +13,8 @@ public class MessageSystemeSysteme implements Serializable {
 
     /**
      * Initialise les coordonnées d'une case suite à une demande
+     * @param queueReponse la queue sur laquelle s'envoie le message réponse
+     * @param id l'identifiant du joueur
      * @param xCase coordonnées en x de la case
      * @param yCase coordonnées en y de la case
      */
@@ -26,7 +28,8 @@ public class MessageSystemeSysteme implements Serializable {
 
     /**
      * Initialise la réponse à une demande de voisins d'une case
-     *
+     * @param succes un booléen pour information de la réussite ou de l'échec de l'opération
+     * @param id l'identifiant du joueur
      */
     public MessageSystemeSysteme(boolean succes, int id) {
         type = MessageSystemeToSysteme.REPONSE;
@@ -47,19 +50,35 @@ public class MessageSystemeSysteme implements Serializable {
      * @return queueReponse la réponse depuis la queue
      */
     public String getQueueReponse() { return queueReponse; }
-
+    
+    /**
+     * Renvoie la position en x d'une case
+     * @return xCase la position en x d'une case
+     */
     public int getxCase() {
         return xCase;
     }
 
+    /**
+     * Renvoie la position en y d'une case
+     * @return yCase la position en y d'une case
+     */
     public int getyCase() {
         return yCase;
     }
 
+    /**
+     * Renvoie la valeur du booléen succes
+     * @return succes le booléen
+     */
     public boolean estSucces() {
         return succes;
     }
 
+    /**
+     * Renvoie l'identifiant de
+     * @return id l'identifiant
+     */
     public int getId() {
         return id;
     }

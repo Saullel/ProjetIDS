@@ -44,7 +44,6 @@ public class Systeme {
     /**
      * Lancement d'une partie
      */
-
     public void lancement() {
 
         ConnectionFactory factory = new ConnectionFactory();
@@ -56,7 +55,7 @@ public class Systeme {
             channelJoueur = connection.createChannel();
 
 
-            // gestion des messages entre le systeme et les joueurs
+            // Gestion des messages entre le système et les joueurs
             DeliverCallback deliverCallbackJoueur = (consumerTag, delivery) -> {
                 try {
                     MessageJoueurSysteme messageJoueurSysteme = (MessageJoueurSysteme) Envoie.deserialize(delivery.getBody());
@@ -79,7 +78,7 @@ public class Systeme {
                 }
             };
 
-            // gestion des messages entre les systemes
+            // Gestion des messages entre les systèmes
             DeliverCallback deliverCallbackSysteme = (consumerTag, delivery) -> {
                 try {
                     MessageSystemeSysteme mss = (MessageSystemeSysteme) Envoie.deserialize(delivery.getBody());
@@ -177,7 +176,7 @@ public class Systeme {
             }
 
 
-            // les queues "connexion" servent à rediriger les joueurs vers leurs propres moyens de communicaton
+            // Les queues "connexion" servent à rediriger les joueurs vers leurs propres moyens de communication
             String queueConnexion_Envoie = nom + "_Connexion_StoJ";
             String queueConnexion_Reception = nom + "_Connexion_JtoS";
             channelJoueur.queueDeclare(queueConnexion_Envoie, false, false, false, null);
@@ -205,9 +204,9 @@ public class Systeme {
                         queueJoueur.put(id, nvelleQueue_Envoie);
 
                         String currentTag =  channelJoueur.basicConsume(nvelleQueue_Reception, true, deliverCallbackJoueur, consumerTag2 -> { });
-                        consumerTags.put(id,currentTag);
+                        consumerTags.put(id, currentTag);
                         try {
-                            ajouterJoueur(id,-1,-1, true);
+                            ajouterJoueur(id, -1, -1, true);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -230,6 +229,12 @@ public class Systeme {
 
     }
 
+    /**
+     * Gère le déplacement d'un joueur
+     * @param id l'identifiant du joueur
+     * @param d le déplacement du joueur
+     * @throws IOException
+     */
     private synchronized void deplacerJoueur(int id, Deplacement d) throws IOException {
         int[] coord = trouverJoueur(id);
         int x = coord[0];
@@ -249,12 +254,12 @@ public class Systeme {
                 y++;
         }
 
-        // si le déplacement mène vers une case du terrain
+        // Si le déplacement mène vers une case du terrain
         if(x > -1 && x < hauteur && y > -1 && y < largeur) { // dans le terrain
             if(terrain[x][y] == 0){
                 supprimerJoueur(id, false);
                 try {
-                    ajouterJoueur(id, x, y,false);
+                    ajouterJoueur(id, x, y, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -273,32 +278,37 @@ public class Systeme {
         }
         else { // sinon trouver le systeme adéquat
             String systAContacter;
-            if(x < 0) { //on veut monter
+            if(x < 0) { // on veut monter
                 if(nom.equals("BG")){ systAContacter = "HG";}
                 else { systAContacter = "HD";}
                 x = hauteur-1;
             }
-            else if (x == hauteur) { //on veut descendre
+            else if (x == hauteur) { // on veut descendre
                 if(nom.equals("HG")){ systAContacter = "BG";}
                 else { systAContacter = "BD";}
                 x = 0;
             }
-            else if (y < 0) { //on veut aller à gauche
+            else if (y < 0) { // on veut aller à gauche
                 if(nom.equals("HD")){ systAContacter = "HG";}
                 else { systAContacter = "BG";}
                 y = largeur-1;
             }
-            else { //on veut aller à droite
+            else { // on veut aller à droite
                 if(nom.equals("HG")){ systAContacter = "HD";}
                 else { systAContacter = "BD";}
                 y = 0;
             }
-            MessageSystemeSysteme mss = new MessageSystemeSysteme(queueSysteme.get(nom),id,x,y);
+            MessageSystemeSysteme mss = new MessageSystemeSysteme(queueSysteme.get(nom),id, x, y);
             channelSysteme.basicPublish("", queueSysteme.get(systAContacter), null, Envoie.serialize(mss));
 
         }
     }
 
+    /**
+     * Trouve la position d'un joueur
+     * @param id l'identifiant du joueur
+     * @return int[] la position du joueur
+     */
     private int[] trouverJoueur(int id) {
         int[] coord = new int[2];
         for (int i = 0; i < hauteur; i++) {
@@ -312,6 +322,14 @@ public class Systeme {
         return coord;
     }
 
+    /**
+     * Ajoute un joueur
+     * @param id l'identifiant du joueur
+     * @param x la position en x
+     * @param y la position en y
+     * @param init un booléen
+     * @throws Exception
+     */
     private synchronized void ajouterJoueur(int id, int x, int y, boolean init) throws Exception {
         if(x == -1 && y == -1) {
             boolean emplacementLibre = false;
@@ -349,6 +367,12 @@ public class Systeme {
         }
     }
 
+    /**
+     * Supprimer un joueur de son emplacement
+     * @param id l'identifiant du joueur
+     * @param prevenir un booléen
+     * @throws IOException
+     */
     private synchronized void supprimerJoueur(int id, boolean prevenir) throws IOException {
         int[] coord = trouverJoueur(id);
         int x = coord[0];
@@ -356,7 +380,7 @@ public class Systeme {
 
         terrain[x][y] = 0;
 
-        // on prévient les voisins
+        // On prévient les voisins
         if(prevenir){
             for(int idVoisin : joueursPresents) {
                 if(idVoisin != id){
@@ -367,6 +391,9 @@ public class Systeme {
         }
     }
 
+    /**
+     * Affiche le terrain
+     */
     private void afficherTerrain() {
         for (int i = 0; i < hauteur; i++) {
             for (int j = 0; j < largeur; j++) {
