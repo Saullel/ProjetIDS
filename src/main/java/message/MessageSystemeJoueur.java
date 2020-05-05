@@ -7,15 +7,9 @@ import types.MessageSystemeToJoueur;
 
 import java.io.Serializable;
 
-//todo : actualiser javadoc
 public class MessageSystemeJoueur implements Serializable {
 	private MessageSystemeToJoueur type;
     private int[][] nvelleCarte;
-    private String nvelleZone;
-    private boolean erreur = false;
-    private int id;
-    private int nouvelX;
-    private int nouvelY;
     private String message;
 	
     /**
@@ -27,38 +21,6 @@ public class MessageSystemeJoueur implements Serializable {
         type = MessageSystemeToJoueur.MAJ_CARTE;
         this.nvelleCarte = nvelleCarte;
         this.message = message;
-    }
-
-	/**
-	 * Initialise le message au joueur
-	 * @param nvelleZone la carte de la zone
-	 * @param nouvelX la potision en X du joueur
-	 * @param nouvelY la position en Y du joueur
-	 */
-    public MessageSystemeJoueur(String nvelleZone, int nouvelX, int nouvelY) {
-        type = MessageSystemeToJoueur.CHANGMT_ZONE;
-        this.nvelleZone =  nvelleZone;
-        this.nouvelX = nouvelX;
-        this. nouvelY= nouvelY;
-    }
-
-    // TODO : utile ?
-    public MessageSystemeJoueur(boolean erreur) {
-    	this.erreur = erreur;
-    	if(erreur == true) {
-    		type = MessageSystemeToJoueur.ERREUR;
-    	}
-    }
-    
-    /**
-     * Initialise le message au joueur
-     * @param id l'identifiant du joueur
-     * @param nomQueue la nom de la queue
-     */
-    public MessageSystemeJoueur(int id, String nomQueue) {
-    	type = MessageSystemeToJoueur.INIT;
-    	this.id = id;
-    	this.message = nomQueue;
     }
     
     /**
@@ -76,41 +38,7 @@ public class MessageSystemeJoueur implements Serializable {
     public int[][] getNvelleCarte() {
         return nvelleCarte;
     }
-
-    /**
-     * Retourne la nouvelle zone
-     * @return nvlleZone la nouvelle zone
-     */
-    public String getNvelleZone() {
-        return nvelleZone;
-    }   
     
-    /**
-     * Retourne le déplacement du joueur validé
-     * @return directionDepl le déplacement du joueur
-     */
-    /*public Deplacement getDirectionDepl() {
-        return directionDepl;
-    }*/
-
-    /**
-     * Retourne l'identifiant du joueur
-     * @return id l'identifiant du joueur
-     */
-    public int getId() { return id; }
-
-    /**
-     * Retourne la position en X du joueur
-     * @return nouvelX la position en X du joueur
-     */
-    public int getNouvelX() { return nouvelX; }
-
-    /**
-     * Retourne la position en Y du joueur
-     * @return nouvelY la position en Y du joueur
-     */
-    public int getNouvelY() { return nouvelY; }
-
     /**
      * Retourne le message au joueur
      * @return message le message au joueur
