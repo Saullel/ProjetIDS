@@ -24,9 +24,9 @@ public class MessageJoueurSysteme implements Serializable {
     }
 
     /**
-     * Demande à quitter le jeu
-     * @param id identifiant du joueur dans la zone
-     * //@param queueReponse queue sur laquelle le systeme doit répondre
+     * Initialise le type du message Joueur
+     * @param id l'identifiant du joueur
+     * @param quitte un booléen pour savoir si le joueur souhaite quitter le jeu
      */
     public MessageJoueurSysteme(int id, boolean quitte){
         if(quitte) { type = MessageJoueurToSysteme.QUITTE;}

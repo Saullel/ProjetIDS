@@ -10,9 +10,7 @@ import outils.Envoie;
 import systeme.AffichageTerrain;
 import types.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import static java.lang.System.out;
 
@@ -25,8 +23,9 @@ public class Joueur {
     private static final Object o = new Object();
 
     /**
-     * Créé un joueur
+     * Créé un joueur et l'affecte à une zone aléatoirement
      * @param nom le nom du joueur
+     * @param random le numéro de la zone à laquelle il sera affecté
      */
     public Joueur(String nom, int random) {
         this.id = Integer.parseInt(nom);
@@ -55,7 +54,7 @@ public class Joueur {
     }
 
     /**
-     * Créé la connexion RabbitMQ
+     * Créé la connexion RabbitMQ côté Joueur
      */
     public void connexion() {
 
@@ -66,7 +65,7 @@ public class Joueur {
             Connection connection =  factory.newConnection();
             channel = connection.createChannel();
 
-            // permet le dialogue entre le systeme et le joueur
+            // Permet le dialogue entre le systeme et le joueur
             DeliverCallback deliverCallbackSysteme = (consumerTag, delivery) -> {
                 try {
                     // le message contient toujours une actualisation du terrain & quelque chose à afficher
@@ -104,8 +103,8 @@ public class Joueur {
             };
             channel.basicConsume(queueConnexion_Reception, true, deliverCallbackConnexion, consumerTag -> { });
 
-            // il faut envoyer un premier message sur la queue connexion afin d'informer de notre présence
-            MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id,false);
+            // Il faut envoyer un premier message sur la queue connexion afin d'informer de notre présence
+            MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id, false);
             channel.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(messageJoueurSysteme));
 
             synchronized (o){
@@ -122,20 +121,31 @@ public class Joueur {
         }
     }
 
-    public void deplacer(Deplacement d) {
-        MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id, d);
+    /**
+     * Envoie un message lors du déplacement d'un joueur
+     * @param d le déplacement du joueur
+     */
+    public void deplacer(Deplacement deplacement) {
+        MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id, deplacement);
         envoieMessage(messageJoueurSysteme);
     }
 
+    /**
+     * Envoie un message lorsqu'un joueur veut quitter le jeu
+     */
     public void quitter(){
-        MessageJoueurSysteme mjs = new MessageJoueurSysteme(id,true);
-        envoieMessage(mjs);
+        MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id, true);
+        envoieMessage(messageJoueurSysteme);
         System.exit(0);
     }
 
-    private void envoieMessage(MessageJoueurSysteme m) {
+    /**
+     * Envoie un message
+     * @param m le message
+     */
+    private void envoieMessage(MessageJoueurSysteme message) {
         try {
-            channel.basicPublish("", queue_Envoie, null, Envoie.serialize(m));
+            channel.basicPublish("", queue_Envoie, null, Envoie.serialize(message));
         } catch (IOException e) {
             e.printStackTrace();
         }
