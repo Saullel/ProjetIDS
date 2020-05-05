@@ -1,10 +1,10 @@
-package systeme;
+package Systeme.Serveur;
 
-import types.Deplacement;
-import types.MessageJoueurToSysteme;
+import Types.Deplacement;
+import Types.MessageJoueurToSysteme;
 import com.rabbitmq.client.*;
-import message.*;
-import outils.Envoie;
+import Message.*;
+import Outils.Envoie;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.lang.System.*;
 
-public class Systeme {
+public class ServeurZone {
     private String nom;
     private int[][] terrain;
     private int hauteur;
@@ -24,13 +24,14 @@ public class Systeme {
     private HashMap<Integer,String> queueJoueur;
     private HashMap<Integer, String> consumerTags;
     private List<Integer> joueursPresents;
+    private static final Object o = new Object();
 
     /**
      * Initialise une systeme du terrain
      * @param nom le nom de la systeme
      * @param terrain le terrain où la systeme est
      */
-    public Systeme(String nom, int[][] terrain) {
+    public ServeurZone(String nom, int[][] terrain) {
         this.nom = nom;
         this.terrain = terrain;
         hauteur = terrain.length;
@@ -90,9 +91,8 @@ public class Systeme {
                                 int x = mss.getxCase();
                                 int y = mss.getyCase();
 
-                                ajouterJoueur(id,x,y,true);
+                                ajouterJoueur(id,x,y);
                                 joueursPresents.add(id);
-                                afficherTerrain();
                                 String nvelleQueue_Envoie = id + "_StoJ";
                                 queueJoueur.put(id, nvelleQueue_Envoie);
 
@@ -102,9 +102,9 @@ public class Systeme {
                                 MessageSystemeSysteme reponse = new MessageSystemeSysteme(true,id);
                                 channelSysteme.basicPublish("", queue, null, Envoie.serialize(reponse));
 
-                                MessageSystemeJoueur message = new MessageSystemeJoueur(terrain,"Bienvenue");
+                                MessageSystemeJoueur message = new MessageSystemeJoueur(terrain,"");
                                 channelJoueur.basicPublish("", nvelleQueue_Envoie, null, Envoie.serialize(message));
-                                out.println("x : " + x + ", y : " + y);
+
                             } catch (Exception e) {
                                 MessageSystemeSysteme reponse = new MessageSystemeSysteme(false, mss.getId());
                                 channelSysteme.basicPublish("", queue, null, Envoie.serialize(reponse));
@@ -121,7 +121,6 @@ public class Systeme {
                                 joueursPresents.remove(i);
                                 queueJoueur.remove(id);
 
-                                System.out.println("id : "+id);
                                 channelJoueur.basicCancel(consumerTags.get(id));
                                 consumerTags.remove(id);
                             }
@@ -179,6 +178,7 @@ public class Systeme {
             // Les queues "connexion" servent à rediriger les joueurs vers leurs propres moyens de communication
             String queueConnexion_Envoie = nom + "_Connexion_StoJ";
             String queueConnexion_Reception = nom + "_Connexion_JtoS";
+
             channelJoueur.queueDeclare(queueConnexion_Envoie, false, false, false, null);
             channelJoueur.queueDeclare(queueConnexion_Reception, false, false, false, null);
 
@@ -196,8 +196,6 @@ public class Systeme {
                         String nvelleQueue_Envoie = s + "_StoJ";
                         String nvelleQueue_Reception = s + "_JtoS";
 
-                        out.println(nvelleQueue_Envoie + " " + nvelleQueue_Reception);
-
                         channelJoueur.queueDeclare(nvelleQueue_Envoie, false, false, false, null);
                         channelJoueur.queueDeclare(nvelleQueue_Reception, false, false, false, null);
 
@@ -206,13 +204,16 @@ public class Systeme {
                         String currentTag =  channelJoueur.basicConsume(nvelleQueue_Reception, true, deliverCallbackJoueur, consumerTag2 -> { });
                         consumerTags.put(id, currentTag);
                         try {
-                            ajouterJoueur(id, -1, -1, true);
+                            ajouterJoueur(id);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         // Redirection du joueur vers ses propres queues (envoie & reception)
-                        MessageSystemeJoueur message = new MessageSystemeJoueur(terrain,"Bienvenue");
+                        MessageSystemeJoueur message = new MessageSystemeJoueur(terrain,"");
                         channelJoueur.basicPublish("", queueConnexion_Envoie, null, Envoie.serialize(message));
+                        synchronized (o){
+                            o.notify();
+                        }
                     }
 
                 } catch (ClassNotFoundException e) {
@@ -220,6 +221,15 @@ public class Systeme {
                 }
             };
             channelJoueur.basicConsume(queueConnexion_Reception, true, deliverCallbackConnexion, consumerTag -> { });
+
+
+            synchronized (o){
+                try {
+                    o.wait();
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
 
             out.println("Systeme " + nom + " actif");
 
@@ -233,7 +243,7 @@ public class Systeme {
      * Gère le déplacement d'un joueur
      * @param id l'identifiant du joueur
      * @param d le déplacement du joueur
-     * @throws IOException
+     * @throws IOException si un message a un problème de serialisation
      */
     private synchronized void deplacerJoueur(int id, Deplacement d) throws IOException {
         int[] coord = trouverJoueur(id);
@@ -259,7 +269,7 @@ public class Systeme {
             if(terrain[x][y] == 0){
                 supprimerJoueur(id, false);
                 try {
-                    ajouterJoueur(id, x, y, false);
+                    ajouterJoueur(id, x, y);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -323,34 +333,52 @@ public class Systeme {
     }
 
     /**
-     * Ajoute un joueur
+     * Ajoute un joueur aux coordonnées [x,y]
      * @param id l'identifiant du joueur
      * @param x la position en x
      * @param y la position en y
-     * @param init un booléen
-     * @throws Exception
+     * @throws Exception si la placen'est pas disponible
      */
-    private synchronized void ajouterJoueur(int id, int x, int y, boolean init) throws Exception {
-        if(x == -1 && y == -1) {
-            boolean emplacementLibre = false;
-            for (int i = 0; i < hauteur && !emplacementLibre; i++) {
-                for (int j = 0; j < largeur && !emplacementLibre; j++) {
-                    if(terrain[i][j] == 0){
-                        x = i;
-                        y = j;
-                        emplacementLibre = true;
-                    }
-                }
-            }
-            if (!emplacementLibre) {
-                throw new Exception("Plus de place coco");
-            }
-        }
-        else if (terrain[x][y] != 0){
+    private synchronized void ajouterJoueur(int id, int x, int y) throws Exception {
+        if (terrain[x][y] != 0){
             throw new Exception("Plus de place coco");
         }
         terrain[x][y] = id;
+        prevenirVoisins(id,false);
+    }
 
+    /***
+     * Ajoute un joueur au premier emplacement disponible
+     * @param id identifiant du joueur
+     * @throws Exception s'il n'y aplus de place dans la zone
+     */
+    private synchronized void ajouterJoueur(int id) throws Exception {
+        int x = 0;
+        int y = 0;
+        boolean emplacementLibre = false;
+        for (int i = 0; i < hauteur && !emplacementLibre; i++) {
+            for (int j = 0; j < largeur && !emplacementLibre; j++) {
+                if(terrain[i][j] == 0){
+                    x = i;
+                    y = j;
+                    emplacementLibre = true;
+                }
+            }
+        }
+        if (!emplacementLibre) {
+            throw new Exception("Plus de place coco");
+        }
+        terrain[x][y] = id;
+        prevenirVoisins(id,true);
+    }
+
+    /***
+     *
+     * @param id identifiant du joueur
+     * @param init booleen qui indique si je joueur est nouveau dans la zone
+     * @throws IOException si le message à envoyer n'est pas serializable
+     */
+    private void prevenirVoisins(int id, boolean init) throws IOException {
         // on prévient les voisins
 
         String message = "";
@@ -359,7 +387,7 @@ public class Systeme {
                 if (idVoisin != id) {
                     message = "Tu as le bonjour du nouveau là !";
                 } else {
-                    message = "Bienvenue :)";
+                    message = "On te souhaite la bienvenue :)";
                 }
             }
             MessageSystemeJoueur messageSystemeJoueur = new MessageSystemeJoueur(terrain, message);
@@ -371,7 +399,7 @@ public class Systeme {
      * Supprimer un joueur de son emplacement
      * @param id l'identifiant du joueur
      * @param prevenir un booléen
-     * @throws IOException
+     * @throws IOException si le message a un problèbe de serialisation
      */
     private synchronized void supprimerJoueur(int id, boolean prevenir) throws IOException {
         int[] coord = trouverJoueur(id);
@@ -390,26 +418,4 @@ public class Systeme {
             }
         }
     }
-
-    /**
-     * Affiche le terrain
-     */
-    private void afficherTerrain() {
-        for (int i = 0; i < hauteur; i++) {
-            for (int j = 0; j < largeur; j++) {
-                switch (terrain[i][j]) {
-                    case -1:
-                        out.print("* | ");
-                        break;
-                    case 0:
-                        out.print("  | ");
-                        break;
-                    default:
-                        out.print("J | ");
-                }
-            }
-            out.println("");
-        }
-    }
-
 }

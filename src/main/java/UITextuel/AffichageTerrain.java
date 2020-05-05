@@ -1,4 +1,4 @@
-package systeme;
+package UITextuel;
 
 public class AffichageTerrain {
 	/**
@@ -8,7 +8,6 @@ public class AffichageTerrain {
 	 */
 	public static String afficher(int[][] t){
         StringBuilder terrain = new StringBuilder();
-        int hauteur = t.length;
         int largeur = t[0].length;
         for (int[] ints : t) {
             for (int j = 0; j < largeur; j++) {

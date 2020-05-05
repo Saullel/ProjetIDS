@@ -1,8 +1,8 @@
-package message;
+package Message;
 
 import java.io.Serializable;
 
-import types.MessageSystemeToSysteme;
+import Types.MessageSystemeToSysteme;
 
 public class MessageSystemeSysteme implements Serializable {
 	private MessageSystemeToSysteme type;
