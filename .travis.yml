@@ -10,10 +10,10 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn compile
+  - mvn compile -q
 
 after_success:
-  - mvn site
+  - mvn site -q
 
 deploy:
   - provider: pages

@@ -1,4 +1,4 @@
-package types;
+package Types;
 
 public enum Case {
 	VIDE (0),

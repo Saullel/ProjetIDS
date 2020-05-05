@@ -1,7 +1,7 @@
-package message;
+package Message;
 
-import types.Deplacement;
-import types.MessageJoueurToSysteme;
+import Types.Deplacement;
+import Types.MessageJoueurToSysteme;
 
 import java.io.Serializable;
 

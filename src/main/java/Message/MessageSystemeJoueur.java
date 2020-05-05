@@ -1,11 +1,8 @@
-package message;
+package Message;
 
 import java.io.Serializable;
 
-import types.Deplacement;
-import types.MessageSystemeToJoueur;
-
-import java.io.Serializable;
+import Types.MessageSystemeToJoueur;
 
 public class MessageSystemeJoueur implements Serializable {
 	private MessageSystemeToJoueur type;

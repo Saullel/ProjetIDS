@@ -1,18 +1,16 @@
-package joueur;
+package Joueur;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-import message.MessageJoueurSysteme;
-import message.MessageSystemeJoueur;
-import outils.Envoie;
-import systeme.AffichageTerrain;
-import types.*;
+import Message.MessageJoueurSysteme;
+import Message.MessageSystemeJoueur;
+import Outils.Envoie;
+import UITextuel.AffichageTerrain;
+import Types.*;
 
 import java.io.IOException;
-
-import static java.lang.System.out;
 
 public class Joueur {
     private int id;
@@ -82,6 +80,9 @@ public class Joueur {
             String queueConnexion_Envoie = emplacement + "_Connexion_JtoS";
             String queueConnexion_Reception = emplacement + "_Connexion_StoJ";
 
+            channel.queueDeclare(queueConnexion_Envoie, false, false, false, null);
+            channel.queueDeclare(queueConnexion_Reception, false, false, false, null);
+
             DeliverCallback deliverCallbackConnexion = (consumerTag, delivery) -> {
                 try {
                     MessageSystemeJoueur messageSystemeJoueur = (MessageSystemeJoueur) Envoie.deserialize(delivery.getBody());
@@ -123,7 +124,7 @@ public class Joueur {
 
     /**
      * Envoie un message lors du déplacement d'un joueur
-     * @param d le déplacement du joueur
+     * @param deplacement le déplacement du joueur
      */
     public void deplacer(Deplacement deplacement) {
         MessageJoueurSysteme messageJoueurSysteme = new MessageJoueurSysteme(id, deplacement);
@@ -141,7 +142,7 @@ public class Joueur {
 
     /**
      * Envoie un message
-     * @param m le message
+     * @param message le message
      */
     private void envoieMessage(MessageJoueurSysteme message) {
         try {

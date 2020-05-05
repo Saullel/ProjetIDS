@@ -1,10 +1,10 @@
-package joueur;
+package Joueur;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Random;
 
-import types.*;
+import Types.*;
 
 
 public class LanceurJoueur {
