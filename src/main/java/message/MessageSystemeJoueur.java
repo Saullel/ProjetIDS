@@ -7,7 +7,6 @@ import types.MessageSystemeToJoueur;
 
 import java.io.Serializable;
 
-//todo : actualiser javadoc
 public class MessageSystemeJoueur implements Serializable {
 	private MessageSystemeToJoueur type;
     private int[][] nvelleCarte;

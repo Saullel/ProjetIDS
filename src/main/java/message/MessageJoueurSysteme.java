@@ -5,7 +5,6 @@ import types.MessageJoueurToSysteme;
 
 import java.io.Serializable;
 
-// TODO : actualiser param
 public class MessageJoueurSysteme implements Serializable {
     private MessageJoueurToSysteme type;
 	private int id;
