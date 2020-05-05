@@ -6,6 +6,7 @@ import java.util.Random;
 
 import types.*;
 
+
 public class LanceurJoueur {
     public static void main(String[] args){
         try {
@@ -13,10 +14,10 @@ public class LanceurJoueur {
 
             BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
 
-            System.out.print("Veuillez entrer un identifian (entier) : ");
+            System.out.print("Veuillez entrer un identifiant (entier) : ");
             String nom = buffer.readLine();
 
-            Joueur j = new Joueur(nom,r.nextInt(3));
+            Joueur j = new Joueur(nom, r.nextInt(3));
             j.connexion();
 
             String s;
