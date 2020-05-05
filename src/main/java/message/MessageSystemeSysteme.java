@@ -9,7 +9,6 @@ public class MessageSystemeSysteme implements Serializable {
     private String queueReponse;
     private int xCase, yCase;
     private int id;
-    private int[][] voisinsCase;
     private boolean succes;
 
     /**
@@ -27,7 +26,7 @@ public class MessageSystemeSysteme implements Serializable {
 
     /**
      * Initialise la réponse à une demande de voisins d'une case
-     * @param voisins voisins d'une case
+     *
      */
     public MessageSystemeSysteme(boolean succes, int id) {
         type = MessageSystemeToSysteme.REPONSE;
@@ -44,19 +43,10 @@ public class MessageSystemeSysteme implements Serializable {
     }
 
     /**
-     * Retourne les voisins d'une case
-     * @return voisinsCase les voisins d'une case
-     */
-    public int[][] getVoisinsCase() {
-    	return voisinsCase;
-    }
-
-    /**
      * Retourne les réponses depuis la queue
      * @return queueReponse la réponse depuis la queue
      */
     public String getQueueReponse() { return queueReponse; }
-
 
     public int getxCase() {
         return xCase;
@@ -69,7 +59,6 @@ public class MessageSystemeSysteme implements Serializable {
     public boolean estSucces() {
         return succes;
     }
-
 
     public int getId() {
         return id;

@@ -1,28 +1,27 @@
 package joueur;
 
-import systeme.Zone;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Random;
+
 import types.*;
 
 public class LanceurJoueur {
     public static void main(String[] args){
         try {
+            Random r = new Random();
+
             BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
 
-            System.out.print("Pseudo : ");
+            System.out.print("Veuillez entrer un identifian (entier) : ");
             String nom = buffer.readLine();
-            Forme forme = types.Forme.CARRE;
-            Couleur couleur = types.Couleur.ROUGE;
 
-            Joueur j = new Joueur(nom);
+            Joueur j = new Joueur(nom,r.nextInt(3));
             j.connexion();
 
             String s;
             
             do {
-                System.out.print(" > ");
                 s = buffer.readLine();
                 switch (s){
                     case "quit":
