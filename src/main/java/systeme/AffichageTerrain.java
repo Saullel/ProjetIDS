@@ -1,6 +1,11 @@
 package systeme;
 
 public class AffichageTerrain {
+	/**
+	 * Affiche le terrain
+	 * @param t le terrain
+	 * @return le terrain sous forme textuelle
+	 */
 	public static String afficher(int[][] t){
         StringBuilder terrain = new StringBuilder();
         int hauteur = t.length;
